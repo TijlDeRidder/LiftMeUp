@@ -1,0 +1,91 @@
+﻿@model IEnumerable<UserViewModel>
+@{
+    ViewData["Title"] = "Gebruikers";
+    string VerticaalStreepje = " | ";
+    string komma = "";
+
+}
+
+<h1>Gebruikers</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Gebruiker
+            </th>
+            <th>
+                Voornaam
+            </th>
+            <th>
+                Achternaam
+            </th>
+            <th>
+                E-mail
+            </th>
+            <th>
+                Rollen
+            </th>
+            <th></th>
+        </tr>
+        <form method="get" asp-action="Index" asp-controller="Users">
+        <tr>
+            <th>
+                <input type="text" name="userName" class="form-control" value=@ViewData["userName"] onchange="$(this.form).submit();" />
+            </th>
+            <th>
+                <input type="text" name="firstName" class="form-control" value=@ViewData["firstName"] onchange="$(this.form).submit();" />
+            </th>
+            <th>
+                <input type="text" name="lastName" class="form-control" value=@ViewData["lastName"] onchange="$(this.form).submit();" />
+            </th>
+            <th>
+                <input type="text" name="email" class="form-control" value=@ViewData["email"] onchange="$(this.form).submit();" />
+            </th>
+        </tr>
+        </form>
+
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                <td>
+                    @{
+                        komma = "";
+                    }
+                    @foreach (string role in item.Roles)
+                    {
+                        @komma @role
+                        {
+                            komma = ", ";
+                        }
+                    }
+                </td>
+                <td>
+                    @if (item.Deleted)
+                    {
+                        <a asp-action="Undelete" asp-route-userName="@item.UserName">Toelaten</a>
+                    }
+                    else
+                    {
+                        <a asp-action="Delete" asp-route-userName="@item.UserName">Verwijderen </a> @VerticaalStreepje
+                        <a asp-action="Roles" asp-route-userName="@item.UserName">Rollen</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

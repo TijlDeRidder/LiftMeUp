@@ -1,0 +1,27 @@
+﻿@model LiftMeUp.Models.ViewModels.RoleViewModel
+
+@{
+    ViewData["Title"] = "Wijzigen rollen";
+}
+
+<h1>Wijzigen Rollen</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Roles">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="UserName" />
+            <div class="form-group">
+                @Html.DisplayNameFor(model => model.UserName)
+                @Html.DisplayFor(model => model.UserName)
+            </div>
+            <div>
+                <label asp-for="Roles" class="control-label"></label>
+                <select multiple="multiple" asp-for="Roles" class="form-control" asp-items="ViewBag.RoleIds"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Bewaren" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
