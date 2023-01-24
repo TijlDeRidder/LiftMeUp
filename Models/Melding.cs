@@ -1,5 +1,6 @@
 ﻿using LiftMeUp.Areas.Identity.Data;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Xml.Linq;
 
 namespace LiftMeUp.Models
@@ -24,7 +25,10 @@ namespace LiftMeUp.Models
         [Display(Name = "uitleg defect")]
         public string uitleg { get; set; }
 
+        [ForeignKey("UserId")]
+        public virtual LiftMeUpUser? User { get; set; }
 
-        public LiftMeUpUser? User { get; set; }
+        [ForeignKey("liftId")]
+        public virtual Lift? Lift { get; set; }
     }
 }

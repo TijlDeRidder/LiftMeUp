@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LiftMeUp.Data;
 using LiftMeUp.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 namespace LiftMeUp.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class StationsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,9 +23,27 @@ namespace LiftMeUp.Controllers
         }
 
         // GET: Stations
-        public async Task<IActionResult> Index()
+        //public async Task<IActionResult> Index()
+        //{
+        //      return View(await _context.Station.ToListAsync());
+        //}
+        public  async Task<IActionResult> Index(int stationId, string stationNaam)
         {
-              return View(await _context.Station.ToListAsync());
+            if(stationNaam != null || stationId != 0)
+            {
+                List<Station> stations = _context.Station.Where(s =>
+                (s.stationName.Contains(stationNaam) || string.IsNullOrEmpty(stationNaam))
+                && (s.stationId == stationId || stationId == 0)
+                ).ToList();
+                ViewData["stationName"] = stationNaam;
+                ViewData["stationId"] = stationId;
+                return View(stations);
+            }
+            else
+            {
+                    return View(await _context.Station.ToListAsync());
+
+            }
         }
 
         // GET: Stations/Details/5
@@ -146,7 +167,9 @@ namespace LiftMeUp.Controllers
             var station = await _context.Station.FindAsync(id);
             if (station != null)
             {
-                _context.Station.Remove(station);
+                station.isDeleted = true;
+                _context.Update(station);
+                await _context.SaveChangesAsync();
             }
             
             await _context.SaveChangesAsync();

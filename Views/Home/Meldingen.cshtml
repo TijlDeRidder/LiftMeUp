@@ -1,0 +1,27 @@
+﻿@model IEnumerable<LiftMeUp.Models.Melding>
+@{
+    ViewData["Title"] = "Meldingen Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+</div>
+<hr />
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-3 mb-3" style="width: 18rem;">
+            <div class="card alert-danger">
+                <div class="card-body">
+                    <h5 class="card-title">@Html.DisplayFor(modelItem => item.startDate)</h5>
+                    <h6>StationId: @Html.DisplayFor(modelItem => item.stationId)</h6>
+                    <h6>LiftId: @Html.DisplayFor(modelItem => item.liftId)</h6>
+                    <h6>Melding: @Html.DisplayFor(modelItem => item.uitleg)</h6>
+                    <form method="post" asp-controller="Meldings" asp-action="Delete" asp-route-id="@item.MeldingId">
+            <input type="submit" value="Delete" class="btn btn-danger"/>
+            </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>

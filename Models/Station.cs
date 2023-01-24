@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Xml.Linq;
 
 namespace LiftMeUp.Models
@@ -19,6 +20,7 @@ namespace LiftMeUp.Models
         public bool hasElevator { get; set; }
         [Required]
         public bool isDeleted { get; set; } = false;
+
     }
 
 }

@@ -1,8 +1,44 @@
-﻿@{
+﻿@model IEnumerable<LiftMeUp.Models.Lift>
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+<hr />
+<form method="get" asp-action="Index" asp-controller="Home">
+    <tr>
+        <th>
+            <input type="text" name="liftName" class="form-control mb-3" style="width: 18rem;" value=@ViewData["StatioName"] onchange="$(this.form).submit();" />
+        </th>
+    </tr>
+</form>
+<div class="row">
+    @foreach(var item in Model){
+        var melding = ViewBag.Meldingen.Find(new Predicate<Melding>(m => m.liftId == item.liftId && m.isDeleted == false));                        <div class="col-md-3 mb-3" style="width: 18rem;">
+                    <div class="card @(item.isWorking ? "alert-success" : "alert-danger")">
+                        <div class="card-body">
+                            <h5 class="card-title">@Html.DisplayFor(modelItem => item.name)</h5>
+                            <h6 style="display: inline-block;">Working: </h6>
+                            <p style="display: inline-block;">@(item.isWorking ? "Yes" : "No")</p>
+                            @if(!item.isWorking){
+                                <br />
+                        <h6 style="display: inline-block;">Broken since: </h6>
+                        <p style="display: inline-block;">@melding.startDate</p>
+                        <p class="card-text">We are working as fast as possible to get this lift back to a working status</p>
+
+                            }
+                    @if (item.isWorking)
+                    {
+                        <br>
+                        <form method="get" asp-action="UserCreate" asp-controller="Meldings" asp-route-id="@item.liftId">
+                            <input type="submit" value="Defect" class="btn btn-primary"/>
+
+                        </form>
+                    }
+                        </div>
+                    </div>
+                </div>
+    }
 </div>

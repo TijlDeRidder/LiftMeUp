@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using LiftMeUp.Areas.Identity.Data;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LiftMeUp.Models
 {
@@ -17,5 +19,7 @@ namespace LiftMeUp.Models
         public bool isWorking { get; set; }
         [Required]
         public bool isDeleted { get; set; } = false;
+        [ForeignKey("stationId")]
+        public virtual Station? Station { get; set; }
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace LiftMeUp.Migrations
 {
-    public partial class Up_To_Identity : Migration
+    public partial class test2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -48,6 +48,22 @@ namespace LiftMeUp.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Station",
+                columns: table => new
+                {
+                    stationId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    stationName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    isAccesible = table.Column<bool>(type: "bit", nullable: false),
+                    hasElevator = table.Column<bool>(type: "bit", nullable: false),
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Station", x => x.stationId);
                 });
 
             migrationBuilder.CreateTable(
@@ -156,6 +172,58 @@ namespace LiftMeUp.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Lift",
+                columns: table => new
+                {
+                    liftId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    stationId = table.Column<int>(type: "int", nullable: false),
+                    isWorking = table.Column<bool>(type: "bit", nullable: false),
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Lift", x => x.liftId);
+                    table.ForeignKey(
+                        name: "FK_Lift_Station_stationId",
+                        column: x => x.stationId,
+                        principalTable: "Station",
+                        principalColumn: "stationId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Melding",
+                columns: table => new
+                {
+                    MeldingId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    liftId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    stationId = table.Column<int>(type: "int", nullable: false),
+                    startDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    isDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    uitleg = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Melding", x => x.MeldingId);
+                    table.ForeignKey(
+                        name: "FK_Melding_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Melding_Lift_liftId",
+                        column: x => x.liftId,
+                        principalTable: "Lift",
+                        principalColumn: "liftId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -194,6 +262,21 @@ namespace LiftMeUp.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Lift_stationId",
+                table: "Lift",
+                column: "stationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Melding_liftId",
+                table: "Melding",
+                column: "liftId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Melding_UserId",
+                table: "Melding",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -214,10 +297,19 @@ namespace LiftMeUp.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Melding");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Lift");
+
+            migrationBuilder.DropTable(
+                name: "Station");
         }
     }
 }

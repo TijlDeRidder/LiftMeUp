@@ -19,7 +19,8 @@ namespace LiftMeUp.Models.ViewModels
 
             [Display(Name = "Verwijderd")]
             public bool Deleted { get; set; }
-
+            [Display(Name = "User-Id")]
+            public string UserId { get; set; }
 
             [Display(Name = "Rollen")]
             public List<string> Roles { get; set; }

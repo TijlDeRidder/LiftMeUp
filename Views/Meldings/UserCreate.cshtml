@@ -1,51 +1,44 @@
 ﻿@model LiftMeUp.Models.Melding
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "UserCreate";
 }
 
-<h1>Edit</h1>
+<h1>Create</h1>
 
 <h4>Melding</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="MeldingId" />
+            <div class="form-group">
+                <label asp-for="stationId" class="control-label"></label>
+                <select id="stationSelect" asp-for="stationId" class="form-control" asp-items="@((IEnumerable<SelectListItem>)ViewData["Stations"])">
+                </select>
+            </div>
             <div class="form-group">
                 <label asp-for="liftId" class="control-label"></label>
                 <select id="liftSelect" asp-for="liftId" class="form-control" asp-items="@((IEnumerable<SelectListItem>)ViewData["Lifts"])"></select>
                 <span asp-validation-for="liftId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="stationId" class="control-label"></label>
-                <select id="stationSelect" asp-for="stationId" class="form-control" asp-items="@((IEnumerable<SelectListItem>)ViewData["Stations"])">
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="startDate" class="control-label"></label>
-                <input asp-for="startDate" class="form-control" />
-                <span asp-validation-for="startDate" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="isDeleted" /> @Html.DisplayNameFor(model => model.isDeleted)
-                </label>
-            </div>
-            <div class="form-group">
                 <label asp-for="uitleg" class="control-label"></label>
                 <input asp-for="uitleg" class="form-control" />
                 <span asp-validation-for="uitleg" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
-                <span asp-validation-for="UserId" class="text-danger"></span>
+            <div class="invisible" hidden>
+            <label class="form-check-label">
+                <input class="form-check-input" asp-for="isDeleted" /> @Html.DisplayNameFor(model => model.isDeleted)
+            </label>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+            <div hidden class="form-group">
+                <input asp-for="UserId" class="form-control" value="@ViewData["UserId"]"></input>
+            </div>
+            <div class="form-group form-check">
             </div>
         </form>
     </div>
@@ -64,7 +57,7 @@
             $.ajax({
                 type: "GET",
                 url: "/Meldings/GetByStationId",
-                data: { stationId: selectedStationIdEdit },
+                data: { stationId: selectedStationId },
                 success: function (lifts) {
                     // Clear the options of the lift select element
                     $("#liftSelect").empty();
@@ -73,13 +66,15 @@
                         var lift = lifts[i];
                         $("#liftSelect").append("<option value='" + lift.liftId + "'>" + lift.name + "</option>");
                     }
-                $("#liftSelect").val(@ViewData["LiftId"]);
                 }
             });
-        }).change();
+        });
     });
 
 </script>
+
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

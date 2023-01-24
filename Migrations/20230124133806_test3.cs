@@ -4,7 +4,7 @@
 
 namespace LiftMeUp.Migrations
 {
-    public partial class Controller : Migration
+    public partial class test3 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

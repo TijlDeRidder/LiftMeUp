@@ -74,30 +74,81 @@ namespace LiftMeUp.Data
                         hasElevator = true,
                         isDeleted = false
                     };
-                    context.Station.AddRange(station1, station2, station3);
+                    Station station4 = new Station {
+                        stationName = "Rogier",
+                        isAccesible = true,
+                        hasElevator = true,
+                        isDeleted = false
+                    };
+                    context.Station.AddRange(station1, station2, station3, station4);
                     context.SaveChanges();
                     Lift lift1 = new Lift
                     {
                         name = "Elizabeth 1",
                         stationId = station1.stationId,
                         isWorking = true,
-                        isDeleted = false
+                        isDeleted = false,
+                        Station = station1
                     };
                     Lift lift2 = new Lift
                     {
                         name = "Elizabeth 2",
                         stationId = station1.stationId,
                         isWorking = false,
-                        isDeleted = false
+                        isDeleted = false,
+                        Station = station1
+
                     };
                     Lift lift3 = new Lift
                     {
                         name = "Koning Boudewijn 1",
                         stationId = station3.stationId,
                         isWorking = true,
-                        isDeleted = false
+                        isDeleted = false,
+                        Station= station3
                     };
-                    context.Lift.AddRange(lift1, lift2, lift3);
+                    Lift lift4 = new Lift
+                    {
+                        name = "Rogier 1",
+                        stationId = station4.stationId,
+                        isWorking = true,
+                        isDeleted = false,
+                        Station = station4
+                    };
+                    Lift lift5 = new Lift
+                    {
+                        name = "Rogier 2",
+                        stationId = station4.stationId,
+                        isWorking = true,
+                        isDeleted = false,
+                        Station = station4
+                    };
+                    Lift lift6 = new Lift
+                    {
+                        name = "Rogier 3",
+                        stationId = station4.stationId,
+                        isWorking = true,
+                        isDeleted = false,
+                        Station = station4
+                    };
+                    Lift lift7 = new Lift
+                    {
+                        name = "Rogier 4",
+                        stationId = station4.stationId,
+                        isWorking = true,
+                        isDeleted = false,
+                        Station = station4
+                    };
+                    Lift lift8 = new Lift
+                    {
+                        name = "Rogier 5",
+                        stationId = station4.stationId,
+                        isWorking = true,
+                        isDeleted = false,
+                        Station = station4
+                        
+                    };
+                    context.Lift.AddRange(lift1, lift2, lift3,lift4,lift5,lift6,lift7,lift8);
                     context.SaveChanges();
                     Melding melding1 = new Melding
                     {
@@ -106,7 +157,20 @@ namespace LiftMeUp.Data
                         stationId = station1.stationId,
                         startDate = DateTime.Now,
                         isDeleted = false,
-                        uitleg = "lift werkt niet meer"
+                        uitleg = "lift werkt niet meer",
+                        Lift = lift2,
+                        User = UserTijl
+                    };
+                    Melding melding2 = new Melding
+                    {
+                        liftId = lift8.liftId,
+                        UserId = UserAdmin.Id,
+                        stationId = station4.stationId,
+                        startDate= DateTime.Now,
+                        isDeleted= false,
+                        uitleg = "Deur gaat niet toe",
+                        Lift = lift8,
+                        User = UserTijl
                     };
                     context.Melding.Add(melding1);
                     context.SaveChanges();

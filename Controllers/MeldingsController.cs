@@ -7,9 +7,14 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LiftMeUp.Data;
 using LiftMeUp.Models;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using LiftMeUp.Areas.Identity.Data;
 
 namespace LiftMeUp.Controllers
 {
+
     public class MeldingsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,13 +25,37 @@ namespace LiftMeUp.Controllers
         }
 
         // GET: Meldings
-        public async Task<IActionResult> Index()
+        [Authorize(Roles = "Admin")]
+
+        public async Task<IActionResult> Index(int meldingId, int liftId, int stationId, string uitleg, string userId)
         {
-            var applicationDbContext = _context.Melding.Include(m => m.User);
-            return View(await applicationDbContext.ToListAsync());
+            if(meldingId != 0 || liftId != 0 || stationId != 0 || uitleg != null || userId != null)
+            {
+                List<Melding> meldingen = _context.Melding.Where(m =>
+                (m.MeldingId == meldingId || meldingId == 0)
+                && (m.liftId == liftId || liftId == 0)
+                && (m.stationId == stationId || stationId == 0)
+                && (m.uitleg.Contains(uitleg) || string.IsNullOrEmpty(uitleg))
+                && (m.UserId.Contains(userId) || string.IsNullOrEmpty(userId))
+                ).ToList();
+                ViewData["liftId"] = liftId;
+                ViewData["meldingId"] = meldingId;
+                ViewData["StationId"] = stationId;
+                ViewData["uitleg"] = uitleg;
+                ViewData["userId"] = userId;
+
+
+                return View(meldingen);
+            }
+            else
+            {
+                var applicationDbContext = _context.Melding;
+                return View(await applicationDbContext.ToListAsync());
+            }
         }
 
         // GET: Meldings/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Melding == null)
@@ -35,7 +64,6 @@ namespace LiftMeUp.Controllers
             }
 
             var melding = await _context.Melding
-                .Include(m => m.User)
                 .FirstOrDefaultAsync(m => m.MeldingId == id);
             if (melding == null)
             {
@@ -46,9 +74,26 @@ namespace LiftMeUp.Controllers
         }
 
         // GET: Meldings/Create
-        public IActionResult Create()
+        [Authorize(Roles = "Admin")]
+        public IActionResult Create(int? liftId)
         {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
+            var lifts = _context.Lift.Select(l => new SelectListItem { Value = l.liftId.ToString(), Text = l.name }).ToList();
+            var stations = _context.Station.Select(s => new SelectListItem { Value = s.stationId.ToString(), Text = s.stationName }).ToList();
+            ViewData["Stations"] = stations;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ViewData["UserId"] = userId;
+            return View();
+        }
+        [Authorize(Roles = "Admin,User")]
+        public IActionResult UserCreate(int? id)
+        {
+            var lift = _context.Lift.FirstOrDefault(l => l.liftId == id);
+            var lifts = _context.Lift.Where(l => l.liftId == id).Select(l => new SelectListItem { Value = l.liftId.ToString(), Text = l.name }).ToList();
+            var stations = _context.Station.Where(s => s.stationId == lift.stationId).Select(s => new SelectListItem { Value = s.stationId.ToString(), Text = s.stationName }).ToList();
+            ViewData["Stations"] = stations;
+            ViewData["Lifts"] = lifts;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ViewData["UserId"] = userId;
             return View();
         }
 
@@ -57,19 +102,32 @@ namespace LiftMeUp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MeldingId,liftId,stationId,startDate,isDeleted,uitleg,UserId")] Melding melding)
+        [Authorize(Roles = "Admin,User")]
+        public async Task<IActionResult> Create([Bind("MeldingId,liftId,stationId,isDeleted,uitleg,UserId")] Melding melding)
         {
             if (ModelState.IsValid)
             {
+                var lift = _context.Lift.Where(l => l.liftId == melding.liftId).FirstOrDefault();
+                lift.isWorking = false;
+                melding.startDate = DateTime.Now;
+                _context.SaveChanges();
                 _context.Add(melding);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (User.IsInRole("Admin"))
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Home");
+                }
             }
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", melding.UserId);
             return View(melding);
         }
 
         // GET: Meldings/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Melding == null)
@@ -82,6 +140,11 @@ namespace LiftMeUp.Controllers
             {
                 return NotFound();
             }
+            var stations = _context.Station.Where(s => s.isDeleted == false).Select(s => new SelectListItem { Value = s.stationId.ToString(), Text = s.stationName }).ToList();
+            var lifts = _context.Lift.Where(l=> l.isDeleted == false).Select(l => new SelectListItem { Value = l.liftId.ToString(), Text = l.name}).ToList();
+            ViewData["Lifts"] = lifts;
+            ViewData["Stations"] = stations;
+            ViewData["liftId"] = melding.liftId;
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", melding.UserId);
             return View(melding);
         }
@@ -91,13 +154,24 @@ namespace LiftMeUp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Edit(int id, [Bind("MeldingId,liftId,stationId,startDate,isDeleted,uitleg,UserId")] Melding melding)
         {
             if (id != melding.MeldingId)
             {
                 return NotFound();
             }
-
+            var tempMelding = await _context.Melding.FindAsync(id);
+            if (tempMelding.liftId != melding.liftId)
+            {
+                var lift = _context.Lift.Where(l => l.liftId == melding.liftId).FirstOrDefault();
+                lift.isWorking = false;
+                var lift2 = _context.Lift.Where(l => l.liftId == tempMelding.liftId).FirstOrDefault();
+                lift2.isWorking = true;
+                _context.SaveChanges();
+            }
+            _context.Entry(tempMelding).State = EntityState.Detached;
             if (ModelState.IsValid)
             {
                 try
@@ -123,6 +197,8 @@ namespace LiftMeUp.Controllers
         }
 
         // GET: Meldings/Delete/5
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Melding == null)
@@ -131,7 +207,6 @@ namespace LiftMeUp.Controllers
             }
 
             var melding = await _context.Melding
-                .Include(m => m.User)
                 .FirstOrDefaultAsync(m => m.MeldingId == id);
             if (melding == null)
             {
@@ -144,16 +219,23 @@ namespace LiftMeUp.Controllers
         // POST: Meldings/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Melding == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Melding'  is null.");
             }
+
             var melding = await _context.Melding.FindAsync(id);
+            var lift = await _context.Lift.FindAsync(melding.liftId);
+            lift.isWorking = true;
             if (melding != null)
             {
-                _context.Melding.Remove(melding);
+                melding.isDeleted = true;
+                _context.Update(melding);
+                await _context.SaveChangesAsync();
             }
             
             await _context.SaveChangesAsync();
@@ -163,6 +245,23 @@ namespace LiftMeUp.Controllers
         private bool MeldingExists(int id)
         {
           return _context.Melding.Any(e => e.MeldingId == id);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin, User")]
+
+        public JsonResult GetByStationIdCreate(int stationId)
+        {
+            var lifts = _context.Lift.Where(l => l.stationId == stationId && l.isWorking).ToList();
+            return Json(lifts);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public JsonResult GetByStationIdEdit(int stationId)
+        {
+            var lifts = _context.Lift.Where(l => l.stationId == stationId).ToList();
+            return Json(lifts);
         }
     }
 }

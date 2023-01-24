@@ -12,14 +12,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LiftMeUp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230111221205_usertest")]
-    partial class usertest
+    [Migration("20230124133358_test2")]
+    partial class test2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.12")
+                .HasAnnotation("ProductVersion", "6.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -118,6 +118,8 @@ namespace LiftMeUp.Migrations
 
                     b.HasKey("liftId");
 
+                    b.HasIndex("stationId");
+
                     b.ToTable("Lift");
                 });
 
@@ -128,6 +130,10 @@ namespace LiftMeUp.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MeldingId"), 1L, 1);
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("isDeleted")
                         .HasColumnType("bit");
@@ -146,6 +152,10 @@ namespace LiftMeUp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("MeldingId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("liftId");
 
                     b.ToTable("Melding");
                 });
@@ -311,6 +321,36 @@ namespace LiftMeUp.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("LiftMeUp.Models.Lift", b =>
+                {
+                    b.HasOne("LiftMeUp.Models.Station", "Station")
+                        .WithMany()
+                        .HasForeignKey("stationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Station");
+                });
+
+            modelBuilder.Entity("LiftMeUp.Models.Melding", b =>
+                {
+                    b.HasOne("LiftMeUp.Areas.Identity.Data.LiftMeUpUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LiftMeUp.Models.Lift", "Lift")
+                        .WithMany()
+                        .HasForeignKey("liftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lift");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

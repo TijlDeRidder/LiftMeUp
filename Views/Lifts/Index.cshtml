@@ -29,6 +29,22 @@
             </th>
             <th></th>
         </tr>
+        <form method="get" asp-action="Index" asp-controller="Lifts">
+        <tr>
+            <th>
+                <input type="number" name="liftId" class="form-control" value=@ViewData["liftId"] onchange="$(this.form).submit();" />
+            </th>
+            <th>
+                <input type="text" name="liftNaam" class="form-control" value="@ViewData["liftNaam"]" onchange="$(this.form).submit()" />
+            </th>
+            <th>
+                <input type="number" name="stationId" class="form-control" value=@ViewData["stationId"] onchange="$(this.form).submit();" />
+            </th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        </form>
     </thead>
     <tbody>
 @foreach (var item in Model) {

@@ -20,15 +20,16 @@ namespace LiftMeUp.Controllers
             {
             }
 
-            public IActionResult Index(string userName, string firstName, string lastName, string email, int? pageNumber)
+            public IActionResult Index(string userName, string userId, string firstName, string lastName, string email)
             {
                 List<UserViewModel> vmUsers = new List<UserViewModel>();
-                List<LiftMeUpUser> users = _context.Users
-                                                    .Where(u => u.UserName != "Dummy"
-                                                            && (u.UserName.Contains(userName) || string.IsNullOrEmpty(userName))
-                                                            && (u.FirstName.Contains(firstName) || string.IsNullOrEmpty(firstName))
-                                                            && (u.LastName.Contains(lastName) || string.IsNullOrEmpty(lastName))
-                                                            && (u.Email.Contains(email) || string.IsNullOrEmpty(email)))
+            List<LiftMeUpUser> users = _context.Users
+                                                .Where(u => u.UserName != "Dummy"
+                                                        && (u.UserName.Contains(userName) || string.IsNullOrEmpty(userName))
+                                                        && (u.Id.Contains(userId) || string.IsNullOrEmpty(userId))
+                                                        && (u.FirstName.Contains(firstName) || string.IsNullOrEmpty(firstName))
+                                                        && (u.LastName.Contains(lastName) || string.IsNullOrEmpty(lastName))
+                                                        && (u.Email.Contains(email) || string.IsNullOrEmpty(email)))                                                                                                       
                                                     .ToList();
                 foreach (LiftMeUpUser user in users)
                 {
@@ -38,6 +39,7 @@ namespace LiftMeUp.Controllers
                         FirstName = user.FirstName,
                         LastName = user.LastName,
                         UserName = user.UserName,
+                        UserId = user.Id,
                         Roles = (from userRole in _context.UserRoles
                                  where userRole.UserId == user.Id
                                  orderby userRole.RoleId
@@ -45,6 +47,7 @@ namespace LiftMeUp.Controllers
                     });
                 }
                 ViewData["userName"] = userName;
+                ViewData["userId"] = userId;
                 ViewData["firstName"] = firstName;
                 ViewData["lastName"] = lastName;
                 ViewData["email"] = email;

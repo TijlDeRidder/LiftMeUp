@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/LiftMeUp.styles.css" asp-append-version="true" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <header>
@@ -28,6 +29,9 @@
                         @if (User.IsInRole("Admin")){
                          <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Admin</a>
+                        </li>
+                        <li>
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Meldingen">Meldingen</a>
                         </li>
                             <div class="btn-group dropend">
                                 <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">

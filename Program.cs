@@ -35,7 +35,6 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
@@ -46,4 +45,5 @@ using (var scope = app.Services.CreateScope())
     var userManager = services.GetRequiredService<UserManager<LiftMeUpUser>>();
     SeedDataContext.Initialize(app);
 }
+
 app.Run();

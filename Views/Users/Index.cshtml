@@ -15,6 +15,9 @@
                 Gebruiker
             </th>
             <th>
+                User-Id
+            </th>
+            <th>
                 Voornaam
             </th>
             <th>
@@ -32,6 +35,9 @@
         <tr>
             <th>
                 <input type="text" name="userName" class="form-control" value=@ViewData["userName"] onchange="$(this.form).submit();" />
+            </th>
+            <th>
+                <input type="text" name="userId" class="form-control" value="@ViewData["userId"]" onchange="$(this.form).submit()"/>
             </th>
             <th>
                 <input type="text" name="firstName" class="form-control" value=@ViewData["firstName"] onchange="$(this.form).submit();" />
@@ -52,6 +58,9 @@
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserId)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.FirstName)

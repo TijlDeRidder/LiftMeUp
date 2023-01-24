@@ -116,6 +116,8 @@ namespace LiftMeUp.Migrations
 
                     b.HasKey("liftId");
 
+                    b.HasIndex("stationId");
+
                     b.ToTable("Lift");
                 });
 
@@ -150,6 +152,8 @@ namespace LiftMeUp.Migrations
                     b.HasKey("MeldingId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("liftId");
 
                     b.ToTable("Melding");
                 });
@@ -317,6 +321,17 @@ namespace LiftMeUp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("LiftMeUp.Models.Lift", b =>
+                {
+                    b.HasOne("LiftMeUp.Models.Station", "Station")
+                        .WithMany()
+                        .HasForeignKey("stationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Station");
+                });
+
             modelBuilder.Entity("LiftMeUp.Models.Melding", b =>
                 {
                     b.HasOne("LiftMeUp.Areas.Identity.Data.LiftMeUpUser", "User")
@@ -324,6 +339,14 @@ namespace LiftMeUp.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("LiftMeUp.Models.Lift", "Lift")
+                        .WithMany()
+                        .HasForeignKey("liftId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lift");
 
                     b.Navigation("User");
                 });

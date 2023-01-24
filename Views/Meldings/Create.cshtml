@@ -13,36 +13,32 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="liftId" class="control-label"></label>
-                <input asp-for="liftId" class="form-control" />
-                <span asp-validation-for="liftId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="stationId" class="control-label"></label>
-                <input asp-for="stationId" class="form-control" />
-                <span asp-validation-for="stationId" class="text-danger"></span>
+                <select id="stationSelect" asp-for="stationId"  class="form-control" asp-items="@((IEnumerable<SelectListItem>)ViewData["Stations"])">
+                    <option value="value" selected>Station Name</option>
+                </select>
             </div>
             <div class="form-group">
-                <label asp-for="startDate" class="control-label"></label>
-                <input asp-for="startDate" class="form-control" />
-                <span asp-validation-for="startDate" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="isDeleted" /> @Html.DisplayNameFor(model => model.isDeleted)
-                </label>
+                <label asp-for="liftId" class="control-label"></label>
+                <select id="liftSelect" asp-for="liftId" class="form-control" asp-items="@((IEnumerable<SelectListItem>)ViewData["Lift"])"></select>
+                <span asp-validation-for="liftId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="uitleg" class="control-label"></label>
                 <input asp-for="uitleg" class="form-control" />
                 <span asp-validation-for="uitleg" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
-            </div>
+            <label class="form-check-label">
+                <input class="form-check-input" asp-for="isDeleted" /> @Html.DisplayNameFor(model => model.isDeleted)
+            </label>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+            <div class="form-group" hidden>
+                <label asp-for="UserId" class="control-label"></label>
+                <input asp-for="UserId" class="form-control" value="@ViewData["UserId"]"></input>
+            </div>
+                        <div class="form-group form-check">
             </div>
         </form>
     </div>
@@ -51,6 +47,31 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+<script>
+    $(document).ready(function () {
+        $("#stationSelect").change(function () {
+            console.log("station id selected");
+            // Get the selected station ID
+            var selectedStationId = $(this).val();
+            // Make an AJAX request to the server to get the list of lifts for the selected station
+            $.ajax({
+                type: "GET",
+                url: "/Meldings/GetByStationIdCreate",
+                data: { stationId: selectedStationId },
+                success: function (lifts) {
+                    // Clear the options of the lift select element
+                    $("#liftSelect").empty();
+                    // Add the new options to the lift select element
+                    for (var i = 0; i < lifts.length; i++) {
+                        var lift = lifts[i];
+                        $("#liftSelect").append("<option value='" + lift.liftId + "'>" + lift.name + "</option>");
+                    }
+                }
+            });
+        });
+    });
+
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

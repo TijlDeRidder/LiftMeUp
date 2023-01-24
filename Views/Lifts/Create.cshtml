@@ -18,12 +18,9 @@
                 <span asp-validation-for="name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="stationId" class="control-label"></label>
+                <label class="control-label">Station:</label>
                 <select asp-for="stationId" class="form-control" asp-items="@((IEnumerable<SelectListItem>)ViewData["Stations"])"></select>
             </div>
-@*            <div>
-                <select asp-for="stationId" class="form-control" asp-items="@((IEnumerable<SelectListItem>)ViewData["Stations"])"></select>
-            </div>*@
             <div class="form-group form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="isWorking" /> @Html.DisplayNameFor(model => model.isWorking)
@@ -35,7 +32,11 @@
                 </label>
             </div>
             <div class="form-group">
+                <form asp-action="create" asp-controller="Meldings">
+
                 <input type="submit" value="Create" class="btn btn-primary" />
+                </form>
+
             </div>
         </form>
     </div>

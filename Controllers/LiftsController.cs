@@ -7,9 +7,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LiftMeUp.Data;
 using LiftMeUp.Models;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using static System.Collections.Specialized.BitVector32;
 
 namespace LiftMeUp.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class LiftsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,13 +24,25 @@ namespace LiftMeUp.Controllers
         }
 
         // GET: Lifts
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int liftId, string liftNaam, int stationId)
         {
-              return View(await _context.Lift.ToListAsync());
-        }
+            if (liftNaam != null || liftId != 0 || stationId != 0)
+            {
+                List<Lift> lifts = _context.Lift.Where(l =>
+                (l.name.Contains(liftNaam) || string.IsNullOrEmpty(liftNaam))
+                && (l.liftId == liftId || liftId == 0)
+                && (l.stationId == stationId || stationId == 0)
+                ).ToList();
 
-        // GET: Lifts/Details/5
-        public async Task<IActionResult> Details(int? id)
+                return View(lifts);
+            }
+            else
+            {
+                return View(await _context.Lift.ToListAsync());
+            }
+        }
+            // GET: Lifts/Details/5
+            public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Lift == null)
             {
@@ -46,7 +62,7 @@ namespace LiftMeUp.Controllers
         // GET: Lifts/Create
         public IActionResult Create()
         {
-            var stations = _context.Station.Select(s => new SelectListItem { Value = s.stationId.ToString(), Text = s.stationName }).ToList();
+            var stations = _context.Station.Where(s => s.isDeleted == false).Select(s => new SelectListItem { Value = s.stationId.ToString(), Text = s.stationName }).ToList();
             ViewData["Stations"] = stations;
             return View();
         }
@@ -70,6 +86,7 @@ namespace LiftMeUp.Controllers
         // GET: Lifts/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+
             if (id == null || _context.Lift == null)
             {
                 return NotFound();
@@ -80,6 +97,8 @@ namespace LiftMeUp.Controllers
             {
                 return NotFound();
             }
+            var stations = _context.Station.Where(s => s.isDeleted == false).Select(s => new SelectListItem { Value = s.stationId.ToString(), Text = s.stationName }).ToList();
+            ViewData["Stations"] = stations;
             return View(lift);
         }
 
@@ -145,10 +164,15 @@ namespace LiftMeUp.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Lift'  is null.");
             }
+            var melding = await _context.Melding.Where(m => m.liftId == id).FirstAsync();
+            melding.isDeleted = true;
+            _context.SaveChanges();
             var lift = await _context.Lift.FindAsync(id);
             if (lift != null)
             {
-                _context.Lift.Remove(lift);
+                lift.isDeleted = true;
+                _context.Update(lift);
+                await _context.SaveChangesAsync();
             }
             
             await _context.SaveChangesAsync();
