@@ -143,7 +143,7 @@ namespace LiftMeUp.Data
                     {
                         name = "Rogier 5",
                         stationId = station4.stationId,
-                        isWorking = true,
+                        isWorking = false,
                         isDeleted = false,
                         Station = station4
                         
@@ -172,7 +172,27 @@ namespace LiftMeUp.Data
                         Lift = lift8,
                         User = UserTijl
                     };
-                    context.Melding.Add(melding1);
+                    context.Melding.AddRange(melding1, melding2);
+                    context.SaveChanges();
+
+                    Notification notification1 = new Notification { 
+                        createTime = DateTime.Now,
+                        isFixed = false,
+                        liftId = lift8.liftId,
+                        liftName = lift8.name,
+                        Lift = lift8,
+                        isDeleted = false
+                    };
+                    Notification notification2 = new Notification
+                    {
+                        createTime = DateTime.Now,
+                        isFixed = false,
+                        liftId = lift2.liftId,
+                        liftName = lift2.name,
+                        Lift = lift2,
+                        isDeleted = false
+                    };
+                    context.Notification.AddRange(notification1, notification2);
                     context.SaveChanges();
                 }
                 else

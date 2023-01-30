@@ -80,6 +80,7 @@ namespace LiftMeUp.Controllers
             var lifts = _context.Lift.Select(l => new SelectListItem { Value = l.liftId.ToString(), Text = l.name }).ToList();
             var stations = _context.Station.Select(s => new SelectListItem { Value = s.stationId.ToString(), Text = s.stationName }).ToList();
             ViewData["Stations"] = stations;
+            var lift = _context.Lift.FirstOrDefault(l => l.liftId == liftId);
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             ViewData["UserId"] = userId;
             return View();
@@ -110,6 +111,14 @@ namespace LiftMeUp.Controllers
                 var lift = _context.Lift.Where(l => l.liftId == melding.liftId).FirstOrDefault();
                 lift.isWorking = false;
                 melding.startDate = DateTime.Now;
+                Notification notification = new Notification()
+                {
+                    createTime = DateTime.Now,
+                    isFixed = false,
+                    liftName = lift.name,
+                    Lift = lift
+                };
+                _context.Notification.Add(notification);
                 _context.SaveChanges();
                 _context.Add(melding);
                 await _context.SaveChangesAsync();
@@ -231,6 +240,14 @@ namespace LiftMeUp.Controllers
             var melding = await _context.Melding.FindAsync(id);
             var lift = await _context.Lift.FindAsync(melding.liftId);
             lift.isWorking = true;
+            Notification notification = new Notification()
+            {
+                createTime = DateTime.Now,
+                isFixed = true,
+                liftName = lift.name,
+                Lift = lift
+            };
+            _context.Notification.Add(notification);
             if (melding != null)
             {
                 melding.isDeleted = true;

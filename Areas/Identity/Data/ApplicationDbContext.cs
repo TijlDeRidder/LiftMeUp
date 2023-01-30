@@ -27,4 +27,6 @@ public class ApplicationDbContext : IdentityDbContext<LiftMeUpUser>
     public DbSet<LiftMeUp.Models.Melding> Melding { get; set; }
 
     public DbSet<LiftMeUp.Models.Station> Station { get; set; } 
+
+    public DbSet<LiftMeUp.Models.Notification> Notification { get; set; }
 }

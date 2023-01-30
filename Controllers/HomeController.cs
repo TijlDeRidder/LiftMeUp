@@ -20,9 +20,14 @@ namespace LiftMeUp.Controllers
 
         public async Task<IActionResult> Index(string LiftName)
         {
-            List<Lift> lifts = _context.Lift.Where(l => l.name.Contains(LiftName) || string.IsNullOrEmpty(LiftName) && l.isDeleted == false).ToList();
-            List<Melding> meldingen = _context.Melding.ToList();
-            ViewBag.Meldingen = meldingen;
+            List<Lift> lifts = _context.Lift.Where(l => (l.name.Contains(LiftName) || string.IsNullOrEmpty(LiftName)) && l.isDeleted == false).ToList();
+            List<Notification> notifications = _context.Notification.ToList();
+            notifications.Reverse();
+            if(notifications.Count > 9){
+                notifications.RemoveRange(9, notifications.Count-9);
+
+            }
+            ViewBag.Notifications = notifications;
             return View(lifts);
         }
 

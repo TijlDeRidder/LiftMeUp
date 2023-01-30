@@ -7,6 +7,30 @@
     <h1 class="display-4">Welcome</h1>
 </div>
 <hr />
+<div class="notification-button float-end">
+    <button type="button" class="btn btn-primary" onclick="showNotifications()">
+        Feed <span class="badge badge-light">@ViewBag.Notifications.Count</span>
+    </button>
+    <div id="notification-dropdown" class="notification-dropdown">
+        @foreach (var notification in ViewBag.Notifications)
+        {
+            
+                if (notification.isFixed)
+                {
+                    <div class="notification alert-success">
+                        >@notification.createTime @notification.liftName  has been fixed
+                    </div>
+                    <hr />
+                }
+                else
+                {
+                    <div class="notification alert-danger">@notification.createTime @notification.liftName has broken down</div>
+                    <hr />
+                }
+        
+        }
+    </div>
+</div>
 <form method="get" asp-action="Index" asp-controller="Home">
     <tr>
         <th>
@@ -16,7 +40,7 @@
 </form>
 <div class="row">
     @foreach(var item in Model){
-        var melding = ViewBag.Meldingen.Find(new Predicate<Melding>(m => m.liftId == item.liftId && m.isDeleted == false));                        <div class="col-md-3 mb-3" style="width: 18rem;">
+        <div class="col-md-3 mb-3" style="width: 18rem;">
                     <div class="card @(item.isWorking ? "alert-success" : "alert-danger")">
                         <div class="card-body">
                             <h5 class="card-title">@Html.DisplayFor(modelItem => item.name)</h5>
@@ -24,8 +48,6 @@
                             <p style="display: inline-block;">@(item.isWorking ? "Yes" : "No")</p>
                             @if(!item.isWorking){
                                 <br />
-                        <h6 style="display: inline-block;">Broken since: </h6>
-                        <p style="display: inline-block;">@melding.startDate</p>
                         <p class="card-text">We are working as fast as possible to get this lift back to a working status</p>
 
                             }
@@ -42,3 +64,13 @@
                 </div>
     }
 </div>
+<script>
+    function showNotifications() {
+        var dropdown = document.getElementById("notification-dropdown");
+        if (dropdown.style.display === "block") {
+            dropdown.style.display = "none";
+        } else {
+            dropdown.style.display = "block";
+        }
+    }
+</script>

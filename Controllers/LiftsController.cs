@@ -118,6 +118,29 @@ namespace LiftMeUp.Controllers
             {
                 try
                 {
+                    if (lift.isWorking)
+                    {
+                        Notification notification = new Notification()
+                        {
+                            
+                            createTime = DateTime.Now,
+                            isFixed = true,
+                            liftName = lift.name,
+                            Lift = lift
+                        };
+                        _context.Notification.Add(notification);
+                    }
+                    else
+                    {
+                        Notification notification = new Notification()
+                        {
+                            createTime = DateTime.Now,
+                            isFixed = false,
+                            liftName = lift.name,
+                            Lift = lift
+                        };
+                        _context.Notification.Add(notification);
+                    }
                     _context.Update(lift);
                     await _context.SaveChangesAsync();
                 }
@@ -164,12 +187,15 @@ namespace LiftMeUp.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Lift'  is null.");
             }
-            var melding = await _context.Melding.Where(m => m.liftId == id).FirstAsync();
-            melding.isDeleted = true;
             _context.SaveChanges();
             var lift = await _context.Lift.FindAsync(id);
             if (lift != null)
             {
+                if(lift.isWorking == false)
+                {
+                    var melding = await _context.Melding.Where(m => m.liftId == id).FirstAsync();
+                    melding.isDeleted = true;
+                }
                 lift.isDeleted = true;
                 _context.Update(lift);
                 await _context.SaveChangesAsync();

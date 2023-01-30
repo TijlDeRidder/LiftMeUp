@@ -4,6 +4,7 @@ using LiftMeUp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LiftMeUp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230124174355_Up_To_Notification")]
+    partial class Up_To_Notification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -156,37 +158,6 @@ namespace LiftMeUp.Migrations
                     b.HasIndex("liftId");
 
                     b.ToTable("Melding");
-                });
-
-            modelBuilder.Entity("LiftMeUp.Models.Notification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<DateTime>("createTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("isDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("isFixed")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("liftId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("liftName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("liftId");
-
-                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("LiftMeUp.Models.Station", b =>
@@ -380,17 +351,6 @@ namespace LiftMeUp.Migrations
                     b.Navigation("Lift");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("LiftMeUp.Models.Notification", b =>
-                {
-                    b.HasOne("LiftMeUp.Models.Lift", "Lift")
-                        .WithMany()
-                        .HasForeignKey("liftId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Lift");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
