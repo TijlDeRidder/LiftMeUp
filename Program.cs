@@ -1,5 +1,6 @@
 using LiftMeUp.Areas.Identity.Data;
 using LiftMeUp.Data;
+using LiftMeUp.MiddleWare;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -53,6 +54,7 @@ app.UseAuthentication();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.UseMiddleware<GlobalNotifications>();
 app.MapRazorPages();
 
 using (var scope = app.Services.CreateScope())

@@ -118,6 +118,11 @@ namespace LiftMeUp.Controllers
             {
                 try
                 {
+                    if(station.isDeleted == true)
+                    {
+                        List<Lift> lifts = await _context.Lift.Where(l => l.stationId == station.stationId).ToListAsync();
+                        lifts.ForEach(l => l.isDeleted = true);
+                    }
                     _context.Update(station);
                     await _context.SaveChangesAsync();
                 }
@@ -169,6 +174,8 @@ namespace LiftMeUp.Controllers
             {
                 station.isDeleted = true;
                 _context.Update(station);
+                List<Lift> lifts = await _context.Lift.Where(l => l.stationId == station.stationId).ToListAsync();
+                lifts.ForEach(l => l.isDeleted = true);
                 await _context.SaveChangesAsync();
             }
             

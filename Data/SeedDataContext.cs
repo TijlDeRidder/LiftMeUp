@@ -25,11 +25,11 @@ namespace LiftMeUp.Data
                         );
                     LiftMeUpUser UserTijl = new LiftMeUpUser
                     {
-                        Email = "kobe-de-ridder@hotmail.com",
+                        Email = "Tijl-de-ridder@hotmail.com",
                         EmailConfirmed = true,
                         LockoutEnabled = true,
-                        UserName = "kobe-de-ridder@hotmail.com",
-                        FirstName = "Kobe",
+                        UserName = "Tijl-de-ridder@hotmail.com",
+                        FirstName = "Tijl",
                         LastName = "De Ridder",
 
                     };
@@ -199,10 +199,10 @@ namespace LiftMeUp.Data
                 {
                     LiftMeUpUser UserTijl = new LiftMeUpUser
                     {
-                        Email = "kobe-de-ridder@hotmail.com",
+                        Email = "Tijl-de-ridder@hotmail.com",
                         EmailConfirmed = true,
                         LockoutEnabled = true,
-                        UserName = "kobe-de-ridder@hotmail.com",
+                        UserName = "Tijl-de-ridder@hotmail.com",
                         FirstName = "Tijl",
                         LastName = "De Ridder",
 

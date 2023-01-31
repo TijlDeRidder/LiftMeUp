@@ -24,7 +24,7 @@ namespace LiftMeUp.Controllers
             {
                 List<UserViewModel> vmUsers = new List<UserViewModel>();
             List<LiftMeUpUser> users = _context.Users
-                                                .Where(u => u.UserName != "Dummy"
+                                                .Where(u => u.UserName != "null"
                                                         && (u.UserName.Contains(userName) || string.IsNullOrEmpty(userName))
                                                         && (u.Id.Contains(userId) || string.IsNullOrEmpty(userId))
                                                         && (u.FirstName.Contains(firstName) || string.IsNullOrEmpty(firstName))
