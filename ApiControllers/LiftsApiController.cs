@@ -24,7 +24,7 @@ namespace LiftMeUp.ApiControllers
         }
 
         // GET: api/LiftsApi
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Admin")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Lift>>> GetLift()
         {
@@ -33,7 +33,7 @@ namespace LiftMeUp.ApiControllers
 
 
         // GET: api/LiftsApi/5
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Admin")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Lift>> GetLift(int id)
         {
@@ -114,7 +114,7 @@ namespace LiftMeUp.ApiControllers
         }
 
         // GET: api/LiftsApi/Working
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Admin")]
         [HttpGet("Working")]
         public async Task<ActionResult<IEnumerable<Lift>>> GetLiftsWorking()
         {
@@ -122,14 +122,14 @@ namespace LiftMeUp.ApiControllers
         }
 
         // GET: api/LiftsApi/Broken
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Admin")]
         [HttpGet("Broken")]
         public async Task<ActionResult<IEnumerable<Lift>>> GetLiftsNotWorking()
         {
             return await _context.Lift.Where(l => l.isWorking == false).ToListAsync();
         }
         // GET: api/LiftsApi/stationId/5
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User, Admin")]
         [HttpGet("stationId/{id}")]
         public async Task<ActionResult<IEnumerable<Lift>>> GetLiftsByStationId(int id)
         {
